@@ -1,14 +1,14 @@
-const articles = require("../models/articles");
+const { Article } = require("../models/article");
 const { HttpError, ctrlWrapper } = require("../helpers");
 
 const getAll = async (req, res, next) => {
-  const result = await articles.listArticles();
+  const result = await Article.find();
   res.json(result);
 };
 
 const getById = async (req, res, next) => {
   const { id } = req.params;
-  const result = await articles.getArticleById(id);
+  const result = await Article.findById(id);
 
   if (!result) {
     throw HttpError(404, "Not found");
@@ -17,13 +17,14 @@ const getById = async (req, res, next) => {
 };
 
 const addArticle = async (req, res, next) => {
-  const result = await articles.addArticle(req.body);
+  const articleInfo = req.body;
+  const result = await Article.create(articleInfo);
   res.status(201).json(result);
 };
 
 const updateArticleById = async (req, res, next) => {
   const { id } = req.params;
-  const result = await articles.updateArticle(id, req.body);
+  const result = await Article.findByIdAndUpdate(id, req.body, { new: true });
 
   if (!result) {
     throw HttpError(404);
@@ -34,7 +35,7 @@ const updateArticleById = async (req, res, next) => {
 
 const deleteArticle = async (req, res, next) => {
   const { id } = req.params;
-  const result = await articles.removeArticle(id);
+  const result = await Article.findByIdAndDelete(id);
   if (!result) {
     throw HttpError(404);
   }
